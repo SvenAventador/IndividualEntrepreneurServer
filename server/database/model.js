@@ -120,31 +120,22 @@ const Invoice = sequelize.define('invoice', {
     }
 })
 
-const CompanyOrder = sequelize.define('company_order', {
+const CompanyCart = sequelize.define('company_cart', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    dateOrder: {
-        type: DataTypes.DATEONLY,
-        defaultValue: Date.now()
-    }
-})
-
-const CompanyOrderGood = sequelize.define('company_order_good', {
-    id: {
+    countGood: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        defaultValue: 0
     }
 })
 
 const Supplier = sequelize.define('supplier', {
     id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        primaryKey: true
     },
     supplierImage: {
         type: DataTypes.TEXT,
@@ -265,18 +256,6 @@ CartGood.belongsTo(Cart)
 CompanyGood.hasMany(CartGood)
 CartGood.belongsTo(CompanyGood)
 
-User.hasMany(CompanyOrder)
-CompanyOrder.belongsTo(User)
-
-Supplier.hasMany(CompanyOrder)
-CompanyOrder.belongsTo(Supplier)
-
-CompanyOrder.hasMany(CompanyOrderGood)
-CompanyOrderGood.belongsTo(CompanyOrder)
-
-SupplierGood.hasMany(CompanyOrderGood)
-CompanyOrderGood.belongsTo(Supplier)
-
 User.hasMany(Invoice)
 Invoice.belongsTo(User)
 
@@ -285,6 +264,15 @@ Invoice.belongsTo(Supplier)
 
 Supplier.hasMany(SupplierGood)
 SupplierGood.belongsTo(Supplier)
+
+Supplier.hasMany(CompanyCart)
+CompanyCart.belongsTo(Supplier)
+
+User.hasMany(CompanyCart)
+CompanyCart.belongsTo(User)
+
+SupplierGood.hasMany(CompanyCart)
+CompanyCart.belongsTo(SupplierGood)
 
 module.exports = {
     User,
@@ -295,8 +283,7 @@ module.exports = {
     DeliveryStatus,
     PaymentStatus,
     Invoice,
-    CompanyOrder,
-    CompanyOrderGood,
+    CompanyCart,
     Supplier,
     SupplierGood,
     CompanyGood

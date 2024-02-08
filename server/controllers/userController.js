@@ -73,7 +73,7 @@ class UserController {
             if (candidate.userRole === 'SUPPLIER') {
                 const supplier = await Supplier.findOne({where: {userId: candidate.id}})
                 token = Validation.generate_jwt(
-                    candidate.id,
+                    supplier.id,
                     candidate.userEmail,
                     candidate.userRole,
                     supplier.supplierSurname,

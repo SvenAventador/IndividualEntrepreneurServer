@@ -2,7 +2,7 @@ const ErrorHandler = require("../errors/errorHandler");
 const Validation = require("../validation/functions");
 const {SupplierGood, User} = require("../database/model");
 const uuid = require("uuid");
-const {resolve} = require("path");
+const {resolve, extname} = require("path");
 const {where} = require("sequelize");
 
 class SupplierController {
@@ -55,6 +55,8 @@ class SupplierController {
 
         const {goodImage} = req.files || {}
 
+        const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+
         try {
             if (!(Validation.isString(goodName)))
                 return next(ErrorHandler.badRequest('Пожалуйста, введите корректно имя товара!'))
@@ -71,6 +73,9 @@ class SupplierController {
 
             if (goodImage === undefined)
                 return next(ErrorHandler.badRequest('Пожалуйста, выберите изображение!'))
+            const fileExtension = extname(goodImage.name).toLowerCase();
+            if (!allowedImageExtensions.includes(fileExtension))
+                return next(ErrorHandler.badRequest('Пожалуйста, загрузите файл в формате изображения: jpg, jpeg, png или gif!'));
 
             await User.findOne({where: {id: userId}}).then((user) => {
                 if (!user || user.userRole !== 'SUPPLIER')
@@ -115,7 +120,14 @@ class SupplierController {
         let goodImageFileName = null;
         if (req.files && req.files.goodImage) {
             const goodImage = req.files.goodImage;
-            goodImageFileName = uuid.v4() + ".jpg";
+            const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+            const fileExtension = extname(goodImage.name).toLowerCase();
+
+            if (!allowedImageExtensions.includes(fileExtension))
+                return next(ErrorHandler.badRequest('Пожалуйста, загрузите файл в формате изображения: jpg, jpeg, png или gif!'));
+
+            goodImageFileName = uuid.v4() + fileExtension;
+
             try {
                 await goodImage.mv(resolve(__dirname, '..', 'static', goodImageFileName));
             } catch (error) {
@@ -136,7 +148,6 @@ class SupplierController {
                 return next(ErrorHandler.badRequest('Пожалуйста, введите корректно количество товара! Минимальное количество товаров - 1!'))
             if (!(Validation.isNumber(goodPrice)) && goodPrice < 50)
                 return next(ErrorHandler.badRequest('Пожалуйста, введите корректно цену товара! Минимальная цена товаров - 50₽!'))
-
 
             const good = await SupplierGood.findOne({where: {id: id}})
 
