@@ -1,6 +1,6 @@
 const {
     User,
-    Cart, Supplier
+    Supplier
 } = require("../database/model");
 const Validation = require("../validation/functions");
 const ErrorHandler = require("../errors/errorHandler")
@@ -30,10 +30,6 @@ class UserController {
                 userEmail,
                 userPassword: await bcrypt.hash(userPassword, 5),
                 userRole
-            })
-
-            await Cart.create({
-                userId: user.id
             })
 
             const token = Validation.generate_jwt(

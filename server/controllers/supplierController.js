@@ -1,9 +1,14 @@
 const ErrorHandler = require("../errors/errorHandler");
 const Validation = require("../validation/functions");
-const {SupplierGood, User} = require("../database/model");
+const {
+    SupplierGood,
+    User, Invoice
+} = require("../database/model");
 const uuid = require("uuid");
-const {resolve, extname} = require("path");
-const {where} = require("sequelize");
+const {
+    resolve,
+    extname
+} = require("path");
 
 class SupplierController {
     async getAllGoods(req, res, next) {
@@ -211,6 +216,54 @@ class SupplierController {
 
                 return res.status(200).json({message: `Товары у поставщика с идентификатором ${userId} успешно удалены!`})
             })
+        } catch (error) {
+            return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
+        }
+    }
+
+    async getAllInvoice(req, res, next) {
+        const {
+            supplierId,
+        } = req.query
+        try {
+            const allInvoice = await Invoice.findAll({
+                where: {
+                    supplierId: supplierId
+                },
+                order:
+                    [['id', 'asc']]
+            })
+            return res.json({allInvoice})
+        } catch (error) {
+            return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
+        }
+    }
+
+    async adoptInvoice(req, res, next) {
+        const {id} = req.query
+
+        try {
+            const candidate = await Invoice.findOne({where: {id: id}})
+            await candidate.update({isAdopted: true})
+            return res.status(200).json({message: 'Накладная успешно принята!'})
+        } catch (error) {
+            return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
+        }
+    }
+
+    async changeDeliveryStatus(req, res, next) {
+        const {
+            invoiceId,
+            deliveryStatusId
+        } = req.query
+
+        try {
+            const candidate = await Invoice.findOne({where: {id: invoiceId}})
+            await candidate.update({
+                deliveryOrderStatusId: deliveryStatusId
+            })
+
+            return res.status(200).json({message: 'Статус доставки успешно обновлен!'})
         } catch (error) {
             return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
         }

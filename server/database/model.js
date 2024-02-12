@@ -42,68 +42,6 @@ const User = sequelize.define('user', {
     }
 })
 
-const Cart = sequelize.define('cart', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    }
-})
-
-const CartGood = sequelize.define('cart_good', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    }
-})
-
-const OrderGood = sequelize.define('order_good', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    }
-})
-
-const Order = sequelize.define('order', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    dateOrder: {
-        type: DataTypes.DATEONLY,
-        defaultValue: Date.now()
-    }
-})
-
-const DeliveryStatus = sequelize.define('delivery_status', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    typeName: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false
-    }
-})
-
-const PaymentStatus = sequelize.define('payment_status', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    typeName: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false
-    }
-})
-
 const Invoice = sequelize.define('invoice', {
     id: {
         type: DataTypes.INTEGER,
@@ -128,7 +66,7 @@ const CompanyCart = sequelize.define('company_cart', {
     },
     countGood: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 1
     }
 })
 
@@ -229,35 +167,21 @@ const CompanyGood = sequelize.define('company_good', {
     }
 })
 
-User.hasOne(Cart)
-Cart.belongsTo(User)
+const DeliveryOrderStatus = sequelize.define('delivery_order_status',{
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    typeName: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false
+    }
+})
 
 User.hasOne(Supplier)
 Supplier.belongsTo(User)
-
-Order.hasMany(OrderGood)
-OrderGood.belongsTo(Order)
-
-CompanyGood.hasMany(OrderGood)
-OrderGood.belongsTo(CompanyGood)
-
-User.hasMany(Order)
-Order.belongsTo(User)
-
-DeliveryStatus.hasMany(Order)
-Order.belongsTo(DeliveryStatus)
-
-PaymentStatus.hasMany(Order)
-Order.belongsTo(PaymentStatus)
-
-Cart.hasMany(CartGood)
-CartGood.belongsTo(Cart)
-
-CompanyGood.hasMany(CartGood)
-CartGood.belongsTo(CompanyGood)
-
-User.hasMany(Invoice)
-Invoice.belongsTo(User)
 
 Supplier.hasMany(Invoice)
 Invoice.belongsTo(Supplier)
@@ -268,20 +192,14 @@ SupplierGood.belongsTo(Supplier)
 Supplier.hasMany(CompanyCart)
 CompanyCart.belongsTo(Supplier)
 
-User.hasMany(CompanyCart)
-CompanyCart.belongsTo(User)
-
 SupplierGood.hasMany(CompanyCart)
 CompanyCart.belongsTo(SupplierGood)
 
+DeliveryOrderStatus.hasMany(Invoice)
+Invoice.belongsTo(DeliveryOrderStatus)
+
 module.exports = {
     User,
-    Cart,
-    CartGood,
-    OrderGood,
-    Order,
-    DeliveryStatus,
-    PaymentStatus,
     Invoice,
     CompanyCart,
     Supplier,
