@@ -398,6 +398,19 @@ class AdminController {
             return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
         }
     }
+
+    async updateCount(req, res, next) {
+        const {id, newCount} = req.query
+        try {
+            const candidate = await CompanyGood.findOne({where: {id: id}})
+            await candidate.update({
+                goodAmount: newCount
+            })
+            return res.json({candidate})
+        } catch (error) {
+            return next(ErrorHandler.internal(`Непредвиденная ошибка: ${error}`))
+        }
+    }
 }
 
 module.exports = new AdminController()

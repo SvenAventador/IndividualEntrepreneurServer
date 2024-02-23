@@ -9,6 +9,7 @@ routes.get('/getAllGoods', adminController.getAllGoods)
 routes.post('/addToCart', adminController.addToCart)
 routes.post('/addSupplier', adminController.createSupplier)
 routes.post('/createOrder', adminController.createOrder)
+routes.put('/updateCount', adminController.updateCount)
 routes.delete('/deleteOneSupplier', adminController.deleteOneSupplier)
 routes.delete('/deleteAllSupplier', adminController.deleteAllSuppliers)
 
